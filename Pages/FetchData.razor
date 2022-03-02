@@ -11,6 +11,9 @@
 <MRow Class="pb-3">
     <MCol Cols="12" Sm="6">
         <MTextField @bind-Value="@summary"
+                    OnKeyDown="HandleOnKeyDown"
+                    Clearable
+                    OnClearClick="OnSearch"
                     Label="Summary"
                     Dense
                     HideDetails="@("auto")"
@@ -26,7 +29,9 @@
                  TItem="EnumObject<WarningSigns>"
                  TItemValue="WarningSigns"
                  Label="高温警告"
+                 OnSelectedItemUpdate="OnSearch"
                  Clearable
+                 OnClearClick="OnSearch"
                  Dense
                  HideDetails="@("auto")"
                  Outlined>
@@ -79,6 +84,15 @@ else
     {
         await Task.Delay(1000);
         forecasts = await ForecastService.GetForecastAsync();
+    }
+
+    private async Task HandleOnKeyDown(KeyboardEventArgs args)
+    {
+        if (args.Key == "Enter")
+        {
+            await Task.Delay(156);
+            await OnSearch();
+        }
     }
 
     private Task OnReset()
