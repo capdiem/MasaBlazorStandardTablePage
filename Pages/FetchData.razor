@@ -11,19 +11,30 @@
 <MRow Class="pb-3">
     <MCol Cols="12" Sm="6">
         <MTextField @bind-Value="@summary"
+                    Label="Summary"
                     Dense
                     HideDetails="@("auto")"
-                    Label="Summary"
                     Outlined>
         </MTextField>
     </MCol>
     <MCol Cols="12" Sm="6">
-        <MSelect>
-            
+        <MSelect @bind-Value="warningSigns"
+                 Items="@(Enum<WarningSigns>.GetEnumObjectList<WarningSigns>())"
+                 ItemText="item => item.Name"
+                 ItemValue="item => item.Value"
+                 TValue="WarningSigns?"
+                 TItem="EnumObject<WarningSigns>"
+                 TItemValue="WarningSigns"
+                 Label="高温警告"
+                 Clearable
+                 Dense
+                 HideDetails="@("auto")"
+                 Outlined>
         </MSelect>
     </MCol>
     <MCol Cols="12" Class="d-flex py-0 pb-3">
         <MSpacer></MSpacer>
+        <MButton Class="mr-2" OnClick="OnReset">重置</MButton>
         <MButton Color="primary" OnClick="OnSearch">搜索</MButton>
     </MCol>
 </MRow>
@@ -61,16 +72,25 @@ else
     };
 
     private string summary;
+    private WarningSigns? warningSigns;
     private WeatherForecast[]? forecasts;
 
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(1000);
-        forecasts = await ForecastService.GetForecastAsync(null);
+        forecasts = await ForecastService.GetForecastAsync();
+    }
+
+    private Task OnReset()
+    {
+        summary = null;
+        warningSigns = null;
+        return OnSearch();
     }
 
     private async Task OnSearch()
     {
-        forecasts = await ForecastService.GetForecastAsync(summary);
+        forecasts = await ForecastService.GetForecastAsync(summary, warningSigns);
     }
+
 }

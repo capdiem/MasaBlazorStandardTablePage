@@ -16,13 +16,24 @@
             new() { Date = DateTime.Now.AddDays(-7), TemperatureC = 2, Summary = "Scorching" },
         };
         
-        public Task<WeatherForecast[]> GetForecastAsync(string? summary)
+        public Task<WeatherForecast[]> GetForecastAsync(string? summary = null, WarningSigns? warningSigns = null)
         {
             IEnumerable<WeatherForecast> res = _data.ToList();
 
             if (!string.IsNullOrEmpty(summary))
             {
                 res = res.Where(item => item.Summary.Contains(summary));
+            }
+
+            if (warningSigns.HasValue)
+            {
+                res = warningSigns switch
+                {
+                    WarningSigns.Yellow => res.Where(item => item.TemperatureC >= 35 && item.TemperatureC < 37),
+                    WarningSigns.Orange => res.Where(item => item.TemperatureC >= 37 && item.TemperatureC < 39),
+                    WarningSigns.Red => res.Where(item => item.TemperatureC >= 39),
+                    _ => res
+                };
             }
 
             return Task.FromResult(res.ToArray());
