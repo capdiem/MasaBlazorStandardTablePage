@@ -40,7 +40,7 @@
     <MCol Cols="12" Class="d-flex py-0 pb-3">
         <MSpacer></MSpacer>
         <MButton Class="mr-2" OnClick="OnReset">重置</MButton>
-        <MButton Color="primary" OnClick="OnSearch">搜索</MButton>
+        <MButton Color="primary" Disabled="searching" Loading="searching" OnClick="HandleOnSearch">搜索</MButton>
     </MCol>
 </MRow>
 
@@ -52,7 +52,7 @@
 }
 else
 {
-    <MDataTable Headers="_headers" Items="forecasts" ItemsPerPage="5" Class="elevation-1">
+    <MDataTable Headers="_headers" Items="forecasts" Loading="loading" ItemsPerPage="5" Class="elevation-1">
         <ItemColContent>
             @if (context.Header.Value == nameof(WeatherForecast.Date))
             {
@@ -80,6 +80,9 @@ else
     private WarningSigns? warningSigns;
     private WeatherForecast[]? forecasts;
 
+    private bool loading;
+    private bool searching;
+
     protected override async Task OnInitializedAsync()
     {
         await Task.Delay(1000);
@@ -91,8 +94,19 @@ else
         if (args.Key == "Enter")
         {
             await Task.Delay(156);
+
+            // bug here: loading animation missing
             await OnSearch();
         }
+    }
+
+    private async Task HandleOnSearch()
+    {
+        searching = true;
+
+        await OnSearch();
+
+        searching = false;
     }
 
     private Task OnReset()
@@ -104,7 +118,12 @@ else
 
     private async Task OnSearch()
     {
+        loading = true;
+
+        await Task.Delay(1000);
         forecasts = await ForecastService.GetForecastAsync(summary, warningSigns);
+
+        loading = false;
     }
 
 }
