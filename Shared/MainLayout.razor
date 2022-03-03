@@ -1,14 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
 <MApp>
-    <MAppBar Flat Fixed Color="white" Class="m-bar--underline">
+    <MAppBar Flat App Color="white" Class="m-bar--underline">
         <span>Masa.Framework</span>
         <MSpacer></MSpacer>
         <MButton Text>
             <a href="https://blazor.masastack.com/">About</a>
         </MButton>
     </MAppBar>
-    <MNavigationDrawer Fixed Permanent class="mt-16" App>
+    <MNavigationDrawer Permanent App>
         <MList Dense Nav>
             <MListItem Link Href="/">
                 <MListItemContent>
@@ -25,6 +25,11 @@
                     <MListItemTitle>Fetch data</MListItemTitle>
                 </MListItemContent>
             </MListItem>
+            <MListItem Link Href="fetchdata2">
+                <MListItemContent>
+                    <MListItemTitle>Fetch data 2</MListItemTitle>
+                </MListItemContent>
+            </MListItem>
         </MList>
     </MNavigationDrawer>
     <MMain>
@@ -34,4 +39,6 @@
             </CascadingValue>
         </MContainer>
     </MMain>
+    
+    <MasaPopupProvider />
 </MApp>

@@ -1,0 +1,118 @@
+﻿@page "/fetchdata2"
+
+<PageTitle>Weather forecast</PageTitle>
+
+@inject WeatherForecastService ForecastService
+
+<PPageHeader Title="Weather forecast"
+             OnSearch="OnSearch"
+             ShowFiltersByDefault>
+    <RightActions>
+        <MButton Icon OnClick="OnReset">
+            <MIcon>mdi-refresh</MIcon>
+        </MButton>
+    </RightActions>
+    <Filters>
+        <MRow>
+            <MCol Cols="12" Sm="6">
+                <DefaultTextField @bind-Value="@summary"
+                                  OnKeyDown="@context.onEnter"
+                                  OnClearClick="@context.onSearch"
+                                  Label="Summary">
+                </DefaultTextField>
+            </MCol>
+            <MCol Cols="12" Sm="6">
+                <DefaultSelect @bind-Value="warningSigns"
+                               Items="@(Enum<WarningSigns>.GetEnumObjectList<WarningSigns>())"
+                               ItemText="item => item.Name"
+                               ItemValue="item => item.Value"
+                               TValue="WarningSigns?"
+                               TItem="EnumObject<WarningSigns>"
+                               TItemValue="WarningSigns"
+                               Label="高温警告"
+                               OnSelectedItemUpdate="@context.onSearch"
+                               OnClearClick="@context.onSearch">
+                </DefaultSelect>
+            </MCol>
+        </MRow>
+    </Filters>
+</PPageHeader>
+
+<MDivider Class="my-4"></MDivider>
+
+@if (forecasts == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <DefaultDataTable Headers="_headers" Items="forecasts" Loading="loading" ItemsPerPage="5" Class="elevation-1">
+        <ItemColContent>
+            @if (context.Header.Value == "actions")
+            {
+                <Actions DisplayCount="3">
+                    <Action Color="primary" Icon="mdi-eye-outline" Label="查看"></Action>
+                    <Action Color="primary" Icon="mdi-pencil-outline" Label="编辑"></Action>
+                    <Action Color="red" Icon="mdi-delete-outline" Label="删除"></Action>
+                </Actions>
+            }
+            else if (context.Header.Value == nameof(WeatherForecast.WarningSigns))
+            {
+                if (context.Item.WarningSigns.HasValue)
+                {
+                    <ColorChip Value="context.Item.WarningSigns" Color="@(v => v!.ToString().ToLower())"></ColorChip>
+                }
+            }
+            else
+            {
+                <GenericColumnRender Value="context.Value" ChippedEnum></GenericColumnRender>
+            }
+        </ItemColContent>
+    </DefaultDataTable>
+}
+
+@code {
+
+    private List<DataTableHeader<WeatherForecast>> _headers = new List<DataTableHeader<WeatherForecast>>
+    {
+        new() { Text = "Date", Value = nameof(WeatherForecast.Date) },
+        new() { Text = "Temp. (C)", Value = nameof(WeatherForecast.TemperatureC) },
+        new() { Text = "Temp. (F)", Value = nameof(WeatherForecast.TemperatureF) },
+        new() { Text = "高温预警", Value = nameof(WeatherForecast.WarningSigns), Sortable = false },
+        new() { Text = "Summary", Value = nameof(WeatherForecast.Summary), Sortable = false },
+        new() { Text = "Actions", Value = "actions", Sortable = false }
+    };
+
+    private string summary;
+    private WarningSigns? warningSigns;
+    private WeatherForecast[]? forecasts;
+
+    private bool loading;
+    private bool searching;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1000);
+        forecasts = await ForecastService.GetForecastAsync();
+    }
+
+    private Task OnReset()
+    {
+        summary = null;
+        warningSigns = null;
+        return OnSearch();
+    }
+
+    private async Task OnSearch()
+    {
+        loading = true;
+
+        await Task.Delay(1000);
+        forecasts = await ForecastService.GetForecastAsync(summary, warningSigns);
+
+        loading = false;
+    }
+
+}

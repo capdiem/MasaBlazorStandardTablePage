@@ -114,11 +114,11 @@ else
 
     private async Task HandleOnKeyDown(KeyboardEventArgs args)
     {
-        if (args.Key == "Enter")
+        if (args.Code == "Enter")
         {
             await Task.Delay(156);
 
-    // bug here: loading animation missing
+            // bug here: loading animation missing
             await OnSearch();
         }
     }

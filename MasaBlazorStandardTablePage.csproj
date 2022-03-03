@@ -6,6 +6,7 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="Masa.Blazor" Version="0.2.10649" />
+		<PackageReference Include="MASA.Blazor.Experimental.Components" Version="0.1.21" />
 		<PackageReference Include="Masa.Utils.Enums" Version="0.3.0" />
 	</ItemGroup>
 </Project>

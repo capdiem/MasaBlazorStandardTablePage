@@ -2,6 +2,7 @@ using MasaBlazorStandardTablePage.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMasaBlazor();
+builder.Services.AddMasaBlazorExperimentalComponents();
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
